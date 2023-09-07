@@ -699,6 +699,7 @@ class Connection:
             self._session_headers.pop('Content-Type', None)
             # Extract MBB User ID (Subject) from token
             subject = None
+            atoken = self._session_tokens['vwg'].get('access_token', None)
             # Try old pyJWT syntax first
             try:
                 subject = jwt.decode(atoken, verify=False).get('sub', None)
@@ -707,7 +708,7 @@ class Connection:
             # Try new pyJWT syntax if old fails
             if subject is None:
                 try:
-                    exp = jwt.decode(atoken, options={'verify_signature': False}).get('sub', None)
+                    subject = jwt.decode(atoken, options={'verify_signature': False}).get('sub', None)
                 except:
                     raise Exception("Could not extract sub attribute from token")
             legacy_vehicles = await self.get(
